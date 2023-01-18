@@ -5,8 +5,8 @@ export default createStore({
   state: {
     examSubject: localStorage.getItem('examSubject') || '1',
     examType: localStorage.getItem('examType') || 'C1',
-    examIng: localStorage.getItem('examIng') || 'false', //是否正在考试
-    remainTime: localStorage.getItem('remainTime') || '240', //倒计时 
+    examIng: +localStorage.getItem('examIng') || 0, //是否正在考试,0结束，1正在考
+    remainTime: localStorage.getItem('remainTime') || '240', //倒计时,单位秒
     examInfo: JSON.parse(localStorage.getItem('examInfo')) || {}, //试卷信息
     examRes: JSON.parse(localStorage.getItem('examRes')) || [], //答卷信息
     historyOneArr: JSON.parse(localStorage.getItem('historyOneArr')) || [],
@@ -55,9 +55,7 @@ export default createStore({
     //设置答卷信息
     setExamRes(state, res) {
       state.examRes = res;
-      if (!state.examEnd) {
-        localStorage.setItem('examRes', JSON.stringify(res));
-      }
+      localStorage.setItem('examRes', JSON.stringify(res));
     },
     //清除答卷信息
     delExamRes(state) {
@@ -78,19 +76,13 @@ export default createStore({
   actions: {
     //获取试卷信息
     async getQuestion({ commit, state }) {
-      await getTestAPI({
+      let res = await getTestAPI({
         type: state.examType,
         subject: state.examSubject
-      }).then((res) => {
-        commit('setExamInfo', res.data.result);
-        commit('setExamIng', 'true');
-        router.push('/exam');
-      });
-    },
+      })
+      commit('setExamInfo', res.data.result);
+      router.push('/exam');
 
-    // saveInfo({commit, state}) {
-
-    // }
-
+    }
   }
 })

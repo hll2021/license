@@ -3,9 +3,9 @@
     <!-- 主页图片 -->
     <van-image width="100%" height="4rem" :src="require('./img/encourage.png')" lazy-load/>
     <!-- 上次未完成考试界面 -->
-    <div v-if="examRes.length!=0" class="remain-wrap">
+    <div v-if="examIng" class="remain-wrap">
         <div class="remain">
-            <p class="title"> 您还有未完成的考试</p>
+            <p class="title">您还有未完成的考试</p>
             <p class="subject-title"> 科目{{ examSubject == 1 ? '一' : '四' }} {{examType}}</p>
             <div class="submit-button">
                 <van-button type="success" @click="this.$router.push('/exam')">继续考试</van-button>
@@ -99,9 +99,8 @@ export default {
         examType() {
             return this.$store.state.examType
         },
-        //答卷信息，这里用于判断是否有上次未完成的考试
-        examRes(){
-            return this.$store.state.examRes
+        examIng() {
+            return this.$store.state.examIng
         }
     },
     methods: {
@@ -115,7 +114,7 @@ export default {
         },
         //放弃继续考试
         abandonExam() {
-            this.$store.commit('setExamIng', false);
+            this.$store.commit('setExamIng', 0);
             this.$store.commit('delExamInfo');
             this.$store.commit('delExamRes');
             //重置倒计时

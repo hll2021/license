@@ -8,7 +8,7 @@
 
     <!-- 倒计时和提交按钮 -->
     <div class="submit-exam-wrap">
-        <van-count-down :time="time" ref="countDown" format="倒计时: mm : ss" class="count-down"
+        <van-count-down :time="this.time" ref="countDown" format="倒计时: mm : ss" class="count-down"
             @change="warning" @finish="this.$router.replace('/result')"/>
         <van-button class="submit-exam-button" round type="success" @click="handIn">提交</van-button>
     </div>
@@ -32,6 +32,10 @@ export default {
             return this.$store.state.examIng
         }
     },
+    //设置考试正在进行
+    created() {
+        this.$store.commit('setExamIng', 1);
+    },
     components: {
         QuestionItem
     },
@@ -43,15 +47,13 @@ export default {
                     '是否确认提交？',
             })
                 .then(() => {
-                    //重置倒计时
-                    this.$store.commit('setRemainTime', 240);
-                    //跳转答题结果
                     this.$router.replace('/result');
                 })
                 .catch(() => {
                     return;
                 });
         },
+        //剩余10秒倒计时显示红色
         warning(cur) {
             this.remain = Math.floor(cur.total / 1000);
             if(!cur.minutes && cur.seconds<= 10) {
@@ -61,8 +63,8 @@ export default {
         }
     },
     beforeUnmount() {
-        //中途退出，保存倒计时
-        if (this.examIng === 'true') {
+        //保存倒计时,预防中途退出的情况
+        if (this.examIng) {
             this.$store.commit('setRemainTime', this.remain);
         } 
     }

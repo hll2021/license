@@ -1,6 +1,6 @@
 <template>
   <!-- 头部导航栏 -->
-  <van-nav-bar left-text="返回" left-arrow @click-left="$router.back()">
+  <van-nav-bar left-arrow @click-left="$router.back()">
     <template #title>
       科目{{ examSubject == 1 ? '一' : '四' }} {{examType}}
     </template>
@@ -77,14 +77,17 @@ export default {
       }
     }
   },
-  unmounted() {
+  created() {
     //保存本次答卷信息到历史记录中
-    console.log(this.examIng)
-    if(this.examIng === 'true') {
+    if(this.examIng) {
       this.saveInfo();
       //结束考试状态
-      this.$store.commit('setExamIng', false);
+      this.$store.commit('setExamIng', 0);
+      //重置倒计时
+      this.$store.commit('setRemainTime', 240);
     } 
+  },
+  unmounted() {
     //清理试题信息
     this.$store.commit('delExamRes');
     this.$store.commit('delExamInfo');
@@ -93,6 +96,9 @@ export default {
 </script>
 
 <style>
+:root {
+  --van-nav-bar-arrow-size: 18px;
+}
 .score {
   color: red;
   font-size: 18px;
@@ -100,7 +106,6 @@ export default {
 }
 .result-wrap{
   border-bottom: 1px solid #ccc;
-  margin-top: 15px ;
 }
 
 .answer {
